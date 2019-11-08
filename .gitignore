@@ -1,2 +1,5 @@
 /input/cracked
 /input/non_cracked
+/input/test
+/input/training
+__pycache__

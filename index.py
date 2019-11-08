@@ -6,20 +6,23 @@ import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Flatten, Dropout, Activation, Conv2D, MaxPooling2D
 import os
+import map_image_cat as map_image
 
-main_dir = "/input/"
-train_dir = "train/train_demo"
+main_dir = "./input/"
+train_dir = "training"
+
 path = os.path.join(main_dir, train_dir)
+
 
 X = []  # Training array
 y = []  # Target array
 
 
-def convert(category): return int(category == 'dog')
+def convert(category): return int(category == 'cracks')
 
 
 for p in os.listdir(path):
-    category = p.split(".")[0]
+    category = map_image.return_defect(p.split(".")[0])
     category = convert(category)
     img_array = cv2.imread(os.path.join(path, p), cv2.IMREAD_GRAYSCALE)
     new_img_array = cv2.resize(img_array, dsize=(80, 80))
@@ -33,7 +36,7 @@ X = np.array(X).reshape(-1, 80, 80, 1)
 y = np.array(y)
 
 # Normalize data
-X = X/255.0
+# X = X/255.0
 
 model = Sequential()
 # Adds a densely-connected layer with 64 units to the model:
@@ -59,7 +62,7 @@ input()
 model.fit(X, y, epochs=10, batch_size=32, validation_split=0.2)
 
 # Testing
-test_dir = "test1/test1"
+test_dir = "test"
 path = os.path.join(main_dir, test_dir)
 image_to_test = input("Enter image number to test (0 to 12499): ")
 
@@ -76,10 +79,10 @@ while (image_to_test.isdigit()):
     prediction = model.predict(X_test)
 
     if (prediction[0][0] < 0.5):
-        result = "Cat - confidence: {}%".format(
+        result = "Non-crack - confidence: {}%".format(
             (0.5 - prediction[0][0]) / 0.5 * 100)
     else:
-        result = "Dog - confidence: {}%".format(
+        result = "Crack - confidence: {}%".format(
             (prediction[0][0] - 0.5) / 0.5 * 100)
 
     print(result)
