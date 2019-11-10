@@ -1,7 +1,6 @@
 from PIL import Image
 import os
 import cv2
-import keyboard
 import matplotlib.pyplot as plt
 
 # subdivide
@@ -15,9 +14,9 @@ import matplotlib.pyplot as plt
 
 
 def subdivide(path='/', fileN='', suffix='.png', size=180, startCount=0):
-    infile = path + fileN + "/" + fileN + suffix
+    infile = path + "/" + fileN + suffix
     # e.g. infile = './splits/to_split/DJI_0950/DJI_0950.JPG'
-    outfile = path + fileN + "/" + "cracks"
+    outfile = path + "/" + fileN + "_part_"
     # e.g. outfile = './splits/to_split/DJI_0950/cracks.JPG'
     chopsize = size
 
@@ -31,29 +30,10 @@ def subdivide(path='/', fileN='', suffix='.png', size=180, startCount=0):
             box = (x0, y0,
                    x0+chopsize if x0+chopsize < width else width - 1,
                    y0+chopsize if y0+chopsize < height else height - 1)
-            print('%s %s' % (infile, box))
+            print('%s %s' % (outfile + str(count), box))
             img_sub = img.crop(box)
             img.crop(box).save(outfile + "_" + str(count) + suffix)
             count += 1
 
 
-def classify_subimage(path='/'):
-    X = []  # Subpicture array
-
-    for p in os.listdir(path):
-        img_array = cv2.imread(os.path.join(path, p), cv2.IMREAD_GRAYSCALE)
-        X.append(img_array)
-
-    for i in range(len(X)):
-        plt.imshow(X[i], cmap="gray")
-        plt.show()
-        keyboard.on_press_key("0", lambda _:
-                              X[i].replace("cracks", "cracks"))
-        keyboard.on_press_key("1", lambda _:
-                              X[i].replace("cracks", "screws"))
-        keyboard.on_press_key("2", lambda _:
-                              X[i].replace("cracks", "joints"))
-
-
-# subdivide('./splits/', 'DJI_0125', '.png', 180)
-classify_subimage('./splits/DJI_0125', 'DJI_0125', '.png', 180)
+subdivide('./splits/1_59', 'DJI_0054', '.png', 180)
